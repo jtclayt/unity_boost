@@ -11,6 +11,9 @@ public class Rocket : MonoBehaviour
     [SerializeField] AudioClip MainEngineAudio;
     [SerializeField] AudioClip ExplosionAudio;
     [SerializeField] AudioClip WinAudio;
+    [SerializeField] ParticleSystem MainEngineParticles;
+    [SerializeField] ParticleSystem ExplosionParticles;
+    [SerializeField] ParticleSystem WinParticles;
     Rigidbody rigidBody;
     AudioSource audioSource;
 
@@ -45,16 +48,18 @@ public class Rocket : MonoBehaviour
         }
         else
         {
+            MainEngineParticles.Stop();
             audioSource.Stop();
         }
     }
 
     private void Thrust()
     {
-        rigidBody.AddRelativeForce(Vector3.up * VerticalThrust);
+        rigidBody.AddRelativeForce(Vector3.up * VerticalThrust * Time.deltaTime);
         if (!audioSource.isPlaying)
         {
             audioSource.PlayOneShot(MainEngineAudio);
+            MainEngineParticles.Play();
         }
     }
 
@@ -64,19 +69,13 @@ public class Rocket : MonoBehaviour
             return;
         }
 
-        audioSource.Stop();
         if (collision.gameObject.CompareTag(FINISH_TAG))
         {
-            audioSource.PlayOneShot(WinAudio);
-            state = State.Transcending;
-            // Invoke will call method after desired wait time (1f)
-            Invoke("LoadNextLevel", RespawnTimer);
+            Win();
         }
         else if (!collision.gameObject.CompareTag(FRIENDLY_TAG))
         {
-            audioSource.PlayOneShot(ExplosionAudio);
-            state = State.Dying;
-            Invoke("LoadFirstLevel", RespawnTimer);
+            GameOver();
         }
     }
 
@@ -100,9 +99,30 @@ public class Rocket : MonoBehaviour
         rigidBody.freezeRotation = false;
     }
 
+    private void Win()
+    {
+        audioSource.Stop();
+        audioSource.PlayOneShot(WinAudio);
+        MainEngineParticles.Stop();
+        WinParticles.Play();
+        state = State.Transcending;
+        // Invoke will call method after desired wait time (1f)
+        Invoke("LoadNextLevel", RespawnTimer);
+    }
+
     private void LoadNextLevel()
     {
         SceneManager.LoadScene(1);
+    }
+
+    private void GameOver()
+    {
+        audioSource.Stop();
+        audioSource.PlayOneShot(ExplosionAudio);
+        MainEngineParticles.Stop();
+        ExplosionParticles.Play();
+        state = State.Dying;
+        Invoke("LoadFirstLevel", RespawnTimer);
     }
 
     private void LoadFirstLevel()
