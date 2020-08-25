@@ -1,13 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Rocket : MonoBehaviour
 {
     [SerializeField] float RCSThrust = 175f;
     [SerializeField] float VerticalThrust = 3f;
+    [SerializeField] float RespawnTimer = 1f;
+    [SerializeField] AudioClip MainEngineAudio;
+    [SerializeField] AudioClip ExplosionAudio;
+    [SerializeField] AudioClip WinAudio;
     Rigidbody rigidBody;
-    AudioSource boosterAudio;
+    AudioSource audioSource;
+
+    enum State { Alive, Dying, Transcending }
+    State state = State.Alive;
 
     const string FRIENDLY_TAG = "Friendly";
     const string FINISH_TAG = "Finish";
@@ -16,48 +24,63 @@ public class Rocket : MonoBehaviour
     void Start()
     {
         rigidBody = GetComponent<Rigidbody>();
-        boosterAudio = GetComponent<AudioSource>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        Thrust();
-        Rotate();
+        if (state == State.Alive)
+        {
+            ThrustInput();
+            RotateInput();
+        }
+    }
+
+    private void ThrustInput()
+    {
+        if (Input.GetKey(KeyCode.Space))
+        {
+            Thrust();
+        }
+        else
+        {
+            audioSource.Stop();
+        }
     }
 
     private void Thrust()
     {
-        if (Input.GetKey(KeyCode.Space))
+        rigidBody.AddRelativeForce(Vector3.up * VerticalThrust);
+        if (!audioSource.isPlaying)
         {
-            rigidBody.AddRelativeForce(Vector3.up * VerticalThrust);
-            if (!boosterAudio.isPlaying)
-            {
-                boosterAudio.Play();
-            }
-        }
-        else
-        {
-            boosterAudio.Stop();
+            audioSource.PlayOneShot(MainEngineAudio);
         }
     }
 
     private void OnCollisionEnter(Collision collision) {
-        if (collision.gameObject.CompareTag(FRIENDLY_TAG))
+        if (state != State.Alive)
         {
-            print("alive");
+            return;
         }
-        else if (collision.gameObject.CompareTag(FINISH_TAG))
+
+        audioSource.Stop();
+        if (collision.gameObject.CompareTag(FINISH_TAG))
         {
-            print("win");
+            audioSource.PlayOneShot(WinAudio);
+            state = State.Transcending;
+            // Invoke will call method after desired wait time (1f)
+            Invoke("LoadNextLevel", RespawnTimer);
         }
-        else
+        else if (!collision.gameObject.CompareTag(FRIENDLY_TAG))
         {
-            print("dead");
+            audioSource.PlayOneShot(ExplosionAudio);
+            state = State.Dying;
+            Invoke("LoadFirstLevel", RespawnTimer);
         }
     }
 
-    private void Rotate()
+    private void RotateInput()
     {
         Vector3 rotationThisFrame = RCSThrust * Time.deltaTime * Vector3.forward;
 
@@ -75,5 +98,15 @@ public class Rocket : MonoBehaviour
 
         // Release control of rotation to physics engine
         rigidBody.freezeRotation = false;
+    }
+
+    private void LoadNextLevel()
+    {
+        SceneManager.LoadScene(1);
+    }
+
+    private void LoadFirstLevel()
+    {
+        SceneManager.LoadScene(0);
     }
 }

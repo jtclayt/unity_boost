@@ -56,6 +56,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -80,6 +81,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!135 &3897166751339123921
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -149,6 +151,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -173,6 +176,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!136 &3897166751515791807
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -243,6 +247,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -267,6 +272,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!136 &3897166751521363620
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -337,6 +343,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -361,6 +368,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!136 &3897166751881741274
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -431,6 +439,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -455,6 +464,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!136 &3897166752063896621
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -534,7 +544,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: b305eecc1bfb602478b28047f5855733, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 0.996
   m_Pitch: 0.91
@@ -634,6 +644,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RCSThrust: 200
   VerticalThrust: 4
+  RespawnTimer: 1
+  MainEngineAudio: {fileID: 8300000, guid: b305eecc1bfb602478b28047f5855733, type: 3}
+  ExplosionAudio: {fileID: 8300000, guid: 819d4ed8247f8884f8ad1fbe46a5674a, type: 3}
+  WinAudio: {fileID: 8300000, guid: 039ee0488ecb7714caa1f73e06175db7, type: 3}
 --- !u!1 &3897166752501023826
 GameObject:
   m_ObjectHideFlags: 0
@@ -690,6 +704,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -714,6 +729,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!136 &3897166752501023824
 CapsuleCollider:
   m_ObjectHideFlags: 0
