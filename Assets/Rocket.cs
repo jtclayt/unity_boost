@@ -7,7 +7,7 @@ public class Rocket : MonoBehaviour
 {
     [SerializeField] float RCSThrust = 175f;
     [SerializeField] float VerticalThrust = 3f;
-    [SerializeField] float RespawnTimer = 1f;
+    [SerializeField] float LevelLoadDelay = 1f;
     [SerializeField] AudioClip MainEngineAudio;
     [SerializeField] AudioClip ExplosionAudio;
     [SerializeField] AudioClip WinAudio;
@@ -107,7 +107,7 @@ public class Rocket : MonoBehaviour
         WinParticles.Play();
         state = State.Transcending;
         // Invoke will call method after desired wait time (1f)
-        Invoke("LoadNextLevel", RespawnTimer);
+        Invoke("LoadNextLevel", LevelLoadDelay);
     }
 
     private void LoadNextLevel()
@@ -122,7 +122,7 @@ public class Rocket : MonoBehaviour
         MainEngineParticles.Stop();
         ExplosionParticles.Play();
         state = State.Dying;
-        Invoke("LoadFirstLevel", RespawnTimer);
+        Invoke("LoadFirstLevel", LevelLoadDelay);
     }
 
     private void LoadFirstLevel()

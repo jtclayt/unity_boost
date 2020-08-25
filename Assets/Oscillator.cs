@@ -17,13 +17,16 @@ public class Oscillator : MonoBehaviour
     void Start()
     {
         startingPos = transform.position;
+        Period = (Period < 0.5) ? 0.5f : Period;
     }
 
     // Update is called once per frame
     void Update()
     {
-        float radianTraveled = Time.time / Period * 2 * Mathf.PI;
-        Vector3 offset = Mathf.Sin(radianTraveled) * MovementVector;
+        // Logic to control oscillating of an object position
+        float rawSin = Mathf.Sin(Time.time / Period * 2 * Mathf.PI);
+        float movementFactor = rawSin / 2 + 0.5f;
+        Vector3 offset = movementFactor * MovementVector;
         transform.position = startingPos + offset;
     }
 }
