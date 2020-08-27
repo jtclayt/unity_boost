@@ -17,8 +17,8 @@ public class Rocket : MonoBehaviour
     Rigidbody rigidBody;
     AudioSource audioSource;
 
-    enum State { Alive, Dying, Transcending }
-    State state = State.Alive;
+    bool isTransitioning = false;
+    bool collisionsOff = false;
 
     const string FRIENDLY_TAG = "Friendly";
     const string FINISH_TAG = "Finish";
@@ -33,38 +33,19 @@ public class Rocket : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (state == State.Alive)
+        if (!isTransitioning)
         {
             ThrustInput();
             RotateInput();
         }
-    }
-
-    private void ThrustInput()
-    {
-        if (Input.GetKey(KeyCode.Space))
+        if (Debug.isDebugBuild)
         {
-            Thrust();
-        }
-        else
-        {
-            MainEngineParticles.Stop();
-            audioSource.Stop();
-        }
-    }
-
-    private void Thrust()
-    {
-        rigidBody.AddRelativeForce(Vector3.up * VerticalThrust * Time.deltaTime);
-        if (!audioSource.isPlaying)
-        {
-            audioSource.PlayOneShot(MainEngineAudio);
-            MainEngineParticles.Play();
+            DebugInput();
         }
     }
 
     private void OnCollisionEnter(Collision collision) {
-        if (state != State.Alive)
+        if (isTransitioning || collisionsOff)
         {
             return;
         }
@@ -79,12 +60,40 @@ public class Rocket : MonoBehaviour
         }
     }
 
+    private void ThrustInput()
+    {
+        if (Input.GetKey(KeyCode.Space))
+        {
+            Thrust();
+        }
+        else
+        {
+            StopThrust();
+        }
+    }
+
+    private void Thrust()
+    {
+        rigidBody.AddRelativeForce(Vector3.up * VerticalThrust * Time.deltaTime);
+        if (!audioSource.isPlaying)
+        {
+            audioSource.PlayOneShot(MainEngineAudio);
+            MainEngineParticles.Play();
+        }
+    }
+
+    private void StopThrust()
+    {
+        MainEngineParticles.Stop();
+        audioSource.Stop();
+    }
+
     private void RotateInput()
     {
         Vector3 rotationThisFrame = RCSThrust * Time.deltaTime * Vector3.forward;
 
         // Take control of rotation
-        rigidBody.freezeRotation = true;
+        rigidBody.angularVelocity = Vector3.zero;
 
         if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
         {
@@ -94,9 +103,32 @@ public class Rocket : MonoBehaviour
         {
             transform.Rotate(-rotationThisFrame);
         }
+    }
 
-        // Release control of rotation to physics engine
-        rigidBody.freezeRotation = false;
+    private void DebugInput()
+    {
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            LoadNextLevel();
+        }
+        else if (Input.GetKeyDown(KeyCode.C))
+        {
+            ToggleCollisions();
+        }
+    }
+
+    private void ToggleCollisions()
+    {
+        if (!collisionsOff)
+        {
+            print("Collisions off");
+            collisionsOff = true;
+        }
+        else
+        {
+            print("Collisions on");
+            collisionsOff = false;
+        }
     }
 
     private void Win()
@@ -105,14 +137,16 @@ public class Rocket : MonoBehaviour
         audioSource.PlayOneShot(WinAudio);
         MainEngineParticles.Stop();
         WinParticles.Play();
-        state = State.Transcending;
+        isTransitioning = true;
         // Invoke will call method after desired wait time (1f)
         Invoke("LoadNextLevel", LevelLoadDelay);
     }
 
     private void LoadNextLevel()
     {
-        SceneManager.LoadScene(1);
+        int currSceneIdx = SceneManager.GetActiveScene().buildIndex;
+        int nextSceneIdx = (currSceneIdx + 1) % SceneManager.sceneCountInBuildSettings;
+        SceneManager.LoadScene(nextSceneIdx);
     }
 
     private void GameOver()
@@ -121,7 +155,7 @@ public class Rocket : MonoBehaviour
         audioSource.PlayOneShot(ExplosionAudio);
         MainEngineParticles.Stop();
         ExplosionParticles.Play();
-        state = State.Dying;
+        isTransitioning = true;
         Invoke("LoadFirstLevel", LevelLoadDelay);
     }
 
